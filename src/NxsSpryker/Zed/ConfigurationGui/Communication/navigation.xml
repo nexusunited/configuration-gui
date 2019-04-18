@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config>
+    <configuration-gui>
+        <label>Configuration</label>
+        <title>Configuration</title>
+        <bundle>configuration-gui</bundle>
+        <controller>index</controller>
+        <action>index</action>
+    </configuration-gui>
+</config>
