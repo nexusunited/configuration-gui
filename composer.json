@@ -10,7 +10,7 @@
   "require": {
     "php": ">=7.1.0",
     "spryker/kernel": "^3.0.0",
-    "nxsspryker/configuration": "^0.1.0"
+    "nxsspryker/configuration": "^0.2.0"
   },
   "autoload": {
     "psr-0": {
