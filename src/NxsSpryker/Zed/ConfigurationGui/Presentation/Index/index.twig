@@ -35,7 +35,6 @@
             });
 
             function handleCollection($collectionHolder) {
-                console.log($collectionHolder);
                 var $addTagButton = $('<button type="button" class="btn-default btn">Add</button>');
                 var $newLinkLi = $('<div></div>').append($addTagButton);
                 $collectionHolder.append($newLinkLi);
@@ -47,11 +46,11 @@
                 $collectionHolder.data('index', $collectionHolder.find(':input').length);
 
                 $addTagButton.on('click', function(e) {
-                    addTagForm($collectionHolder, $newLinkLi);
+                    additionalAddButton($collectionHolder, $newLinkLi);
                 });
             }
 
-            function addTagForm($collectionHolder, $newLinkLi) {
+            function additionalAddButton($collectionHolder, $newLinkLi) {
                 var prototype = $collectionHolder.data('prototype');
                 var index = $collectionHolder.data('index');
 

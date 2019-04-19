@@ -67,7 +67,7 @@ class IndexController extends AbstractController
     protected function handleFormData(array $data): void
     {
         foreach ($data as $key => $value) {
-            if (\is_array($value) && isset($value[$key])) {
+            if (isset($value[$key]) && \is_array($value)) {
                 $this->handleFormData($value);
                 continue;
             }
