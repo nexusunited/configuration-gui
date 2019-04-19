@@ -20,8 +20,8 @@ class IndexController extends AbstractController
     public function indexAction(Request $request): array
     {
         $configurations = $this->getFactory()->getConfigurationGuiPlugins();
-        $configurationFormViews = [];
 
+        $configurationFormViews = [];
         foreach ($configurations as $configuration) {
             $configurationForm = $configuration->getConfigurationValueForm();
             $configurationForm->handleRequest($request);
@@ -56,7 +56,22 @@ class IndexController extends AbstractController
      */
     protected function handleConfigurationUpdate(FormInterface $configurationForm): void
     {
-        foreach ($configurationForm->getData() as $key => $value) {
+        $this->handleFormData($configurationForm->getData());
+    }
+
+    /**
+     * @param array $data
+     *
+     * @return void
+     */
+    protected function handleFormData(array $data): void
+    {
+        foreach ($data as $key => $value) {
+            if (\is_array($value) && isset($value[$key])) {
+                $this->handleFormData($value);
+                continue;
+            }
+
             $this->setConfigurationValue($key, $value);
         }
     }

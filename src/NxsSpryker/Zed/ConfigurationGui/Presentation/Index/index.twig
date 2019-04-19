@@ -11,13 +11,69 @@
                     {{ form_start(configurationForm) }}
                         {% for child in configurationForm %}
                             {{ form_row(child) }}
-                            <br/>
                         {% endfor %}
-                        <input class="btn btn-primary" type="submit" value="Submit">
+                        <input class="form-group btn btn-primary" type="submit" value="Submit">
                     {{ form_end(configurationForm) }}
                 </div>
             </div>
         {% endfor %}
+    {% endblock %}
+
+
+    {% block form_js %}
+        <script
+                src="https://code.jquery.com/jquery-3.3.1.min.js"
+                integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+                crossorigin="anonymous">
+        </script>
+        <script>
+            jQuery(document).ready(function() {
+                $collectionHolder = $('.collection_formtype').each(function() {
+                    handleCollection($(this));
+                });
+
+            });
+
+            function handleCollection($collectionHolder) {
+                console.log($collectionHolder);
+                var $addTagButton = $('<button type="button" class="btn-default btn">Add</button>');
+                var $newLinkLi = $('<div></div>').append($addTagButton);
+                $collectionHolder.append($newLinkLi);
+                $collectionHolder.find('> .form-group').each(function() {
+                    addRemoveButton($(this));
+                });
+                $collectionHolder.find('label').remove();
+
+                $collectionHolder.data('index', $collectionHolder.find(':input').length);
+
+                $addTagButton.on('click', function(e) {
+                    addTagForm($collectionHolder, $newLinkLi);
+                });
+            }
+
+            function addTagForm($collectionHolder, $newLinkLi) {
+                var prototype = $collectionHolder.data('prototype');
+                var index = $collectionHolder.data('index');
+
+                var newForm = prototype;
+                newForm = newForm.replace(/__name__/g, index);
+
+                $collectionHolder.data('index', index + 1);
+
+                var $newFormLi = $('<div></div>').append(newForm);
+                $newLinkLi.before($newFormLi);
+                addRemoveButton($newFormLi.children().first());
+                $newFormLi.find('label').remove();
+            }
+
+            function addRemoveButton(container) {
+                var removeTagButton = $('<button type="button" class="btn-default btn">Remove</button>');
+                container.append(removeTagButton);
+                removeTagButton.on('click', function(e) {
+                    container.remove();
+                });
+            }
+        </script>
     {% endblock %}
 
 {% endblock %}

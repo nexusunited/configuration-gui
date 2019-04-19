@@ -5,6 +5,7 @@ namespace NxsSpryker\Zed\ConfigurationGui\Communication\Plugin;
 use NxsSpryker\Zed\Configuration\Communication\Plugin\ConfigurationValueInterface;
 use NxsSpryker\Zed\ConfigurationGui\Communication\Form\ConfigurationValueForm;
 use Spryker\Zed\Kernel\Communication\AbstractPlugin;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormInterface;
 
 /**
@@ -12,6 +13,11 @@ use Symfony\Component\Form\FormInterface;
  */
 abstract class AbstractConfigurationGuiPlugin extends AbstractPlugin implements ConfigurationGuiPluginInterface
 {
+    const COLLECTION_FORMTYPE_CLASS = 'collection_formtype';
+    const DEFAULT_FIELD_TYPE = TextType::class;
+    const DEFAULT_FIELD_LABEL = '';
+    const DEFAULT_IS_COLLECTION = false;
+
     /**
      * @return \NxsSpryker\Zed\Configuration\Communication\Plugin\ConfigurationValueInterface
      */
@@ -45,7 +51,7 @@ abstract class AbstractConfigurationGuiPlugin extends AbstractPlugin implements 
         $configurationKey = $this->getConfigurationValueKey();
 
         return [
-            $configurationKey => $this->getFactory()->getConfigurationValue($configurationKey)->getValue(),
+            $configurationKey => $this->getConfigurationValueData(),
         ];
     }
 
@@ -54,11 +60,60 @@ abstract class AbstractConfigurationGuiPlugin extends AbstractPlugin implements 
      */
     public function getFormOptions(): array
     {
-        return [
+        $options = [
             ConfigurationValueForm::CONFIGURATION_FIELD_KEY => $this->getConfigurationValueKey(),
             ConfigurationValueForm::CONFIGURATION_FIELD_LABEL => $this->getConfigurationFieldLabel(),
-            'label' => $this->getFormLabel(),
+            ConfigurationValueForm::CONFIGURATION_FIELD_TYPE => $this->getFieldType(),
+            ConfigurationValueForm::CONFIGURATION_FIELD_OPTIONS => $this->getFieldOptions(),
         ];
+
+        return $options;
+    }
+
+    /**
+     * @return array
+     */
+    protected function getFieldOptions(): array
+    {
+        $options = [
+            'label' => $this->getFormLabel(),
+            'empty_data' => $this->getEmptyData(),
+        ];
+
+        if ($this->isCollection()) {
+            $options = $this->addCollectionClassOption($options);
+        }
+
+        return $options;
+    }
+
+    /**
+     * @return mixed
+     */
+    protected function getEmptyData()
+    {
+        return '';
+    }
+
+    /**
+     * @param array $options
+     *
+     * @return array
+     */
+    protected function addCollectionClassOption(array $options): array
+    {
+        $existingClass = '';
+        if (isset($options['attr']['class']) && $options['attr']['class']) {
+            $existingClass = $options['attr']['class'];
+        }
+
+        $options['attr']['class'] = \sprintf(
+            '%s %s',
+            $existingClass,
+            self::COLLECTION_FORMTYPE_CLASS
+        );
+
+        return $options;
     }
 
     /**
@@ -78,10 +133,36 @@ abstract class AbstractConfigurationGuiPlugin extends AbstractPlugin implements 
     }
 
     /**
+     * @return mixed
+     */
+    protected function getConfigurationValueData()
+    {
+        return $this->getFactory()
+            ->getConfigurationValue($this->getConfigurationValueKey())
+            ->getValue();
+    }
+
+    /**
      * @return string
      */
     protected function getFormLabel(): string
     {
-        return '';
+        return self::DEFAULT_FIELD_LABEL;
+    }
+
+    /**
+     * @return string
+     */
+    protected function getFieldType(): string
+    {
+        return self::DEFAULT_FIELD_TYPE;
+    }
+
+    /**
+     * @return bool
+     */
+    protected function isCollection(): bool
+    {
+        return self::DEFAULT_IS_COLLECTION;
     }
 }

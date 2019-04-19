@@ -11,6 +11,8 @@ class ConfigurationValueForm extends AbstractType
 {
     public const CONFIGURATION_FIELD_KEY = 'CONFIGURATION_FIELD_KEY';
     public const CONFIGURATION_FIELD_LABEL = 'CONFIGURATION_FIELD_LABEL';
+    public const CONFIGURATION_FIELD_TYPE = 'CONFIGURATION_FIELD_TYPE';
+    public const CONFIGURATION_FIELD_OPTIONS = 'CONFIGURATION_FIELD_OPTIONS';
     public const FORM_NAME = 'FORM_NAME';
 
     /**
@@ -22,7 +24,6 @@ class ConfigurationValueForm extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $this->addConfigurationFormField($builder, $options);
-        $this->addModelTransformer($builder);
     }
 
     /**
@@ -35,7 +36,7 @@ class ConfigurationValueForm extends AbstractType
     {
         $builder->add(
             $this->getFieldName($options),
-            $this->getFieldType(),
+            $this->getFieldType($options),
             $this->getFieldOptions($options)
         );
 
@@ -49,9 +50,7 @@ class ConfigurationValueForm extends AbstractType
      */
     protected function getFieldOptions(array $options): array
     {
-        return [
-            'label' => $options[self::CONFIGURATION_FIELD_LABEL],
-        ];
+        return $options[self::CONFIGURATION_FIELD_OPTIONS];
     }
 
     /**
@@ -65,20 +64,13 @@ class ConfigurationValueForm extends AbstractType
     }
 
     /**
+     * @param array $options
+     *
      * @return string
      */
-    protected function getFieldType(): string
+    protected function getFieldType(array $options): string
     {
-        return TextType::class;
-    }
-
-    /**
-     * @param \Symfony\Component\Form\FormBuilderInterface $builder
-     *
-     * @return void
-     */
-    protected function addModelTransformer(FormBuilderInterface $builder): void
-    {
+        return $options[self::CONFIGURATION_FIELD_TYPE];
     }
 
     /**
@@ -90,8 +82,10 @@ class ConfigurationValueForm extends AbstractType
     {
         $resolver->setDefaults(
             [
-                self::CONFIGURATION_FIELD_KEY => '',
+                self::CONFIGURATION_FIELD_KEY => self::CONFIGURATION_FIELD_KEY,
                 self::CONFIGURATION_FIELD_LABEL => '',
+                self::CONFIGURATION_FIELD_TYPE => TextType::class,
+                self::CONFIGURATION_FIELD_OPTIONS => [],
             ]
         );
     }

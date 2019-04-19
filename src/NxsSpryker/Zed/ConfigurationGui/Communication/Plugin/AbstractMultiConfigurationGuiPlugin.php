@@ -45,7 +45,7 @@ abstract class AbstractMultiConfigurationGuiPlugin extends AbstractPlugin implem
     {
         $data = [];
         foreach ($this->getConfigurationValues() as $plugin) {
-            $data[] = $plugin->getFormData();
+            $data[$plugin->getConfigurationValueKey()] = $plugin->getFormData();
         }
 
         return $data;

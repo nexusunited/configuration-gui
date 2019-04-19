@@ -2,6 +2,7 @@
 
 namespace NxsSpryker\Zed\ConfigurationGui\Communication\Form;
 
+use NxsSpryker\Zed\ConfigurationGui\Communication\Plugin\AbstractConfigurationGuiPlugin;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -24,7 +25,7 @@ class ConfigurationMultiValueForm extends AbstractType
             $builder->add(
                 $configurationValuePlugin->getConfigurationValueKey(),
                 $configurationValuePlugin->getFormType(),
-                \array_merge($configurationValuePlugin->getFormOptions(), ['label' => false])
+                $this->getOptions($configurationValuePlugin)
             );
         }
     }
@@ -41,5 +42,32 @@ class ConfigurationMultiValueForm extends AbstractType
                 self::CONFIGURATION_VALUE_FORMS => [],
             ]
         );
+    }
+
+    /**
+     * @param \NxsSpryker\Zed\ConfigurationGui\Communication\Plugin\AbstractConfigurationGuiPlugin $configurationGuiPlugin
+     *
+     * @return array
+     */
+    protected function getOptions(AbstractConfigurationGuiPlugin $configurationGuiPlugin): array
+    {
+        return \array_merge(
+            $configurationGuiPlugin->getFormOptions(),
+            $this->getDefaultOptions($configurationGuiPlugin)
+        );
+    }
+
+    /**
+     * @param \NxsSpryker\Zed\ConfigurationGui\Communication\Plugin\AbstractConfigurationGuiPlugin $configurationGuiPlugin
+     *
+     * @return array
+     */
+    protected function getDefaultOptions(AbstractConfigurationGuiPlugin $configurationGuiPlugin): array
+    {
+        return [
+            'label' => false,
+            'data' => $configurationGuiPlugin->getFormData(),
+            'required' => false,
+        ];
     }
 }
